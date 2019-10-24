@@ -32,6 +32,7 @@ onload = async () => {
     }
 
     function onStopRecordingClick() {
+        modules.record.close()
         modules.record.stopRecording()
         $('#play').disabled = false
         $('#download').disabled = false
