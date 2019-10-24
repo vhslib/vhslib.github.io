@@ -32,11 +32,7 @@
     }
 
     function close() {
-        let tracks = stream.getTracks()
-
-        for (let track of tracks) {
-            track.stop()
-        }
+        stream.getTracks().forEach(track => track.stop())
 
         stream = null
         mediaRecorder = null
