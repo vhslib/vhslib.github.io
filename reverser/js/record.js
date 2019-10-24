@@ -2,7 +2,8 @@
     if (!window.modules) window.modules = {}
 
     window.modules.record = {
-        init,
+        open,
+        close,
         record,
         stopRecording,
         play,
@@ -16,7 +17,7 @@
     let audioBuffer = null
     let source = null
 
-    async function init() {
+    async function open() {
         try {
             stream = await navigator.mediaDevices.getUserMedia({ audio: true })
         }
@@ -28,6 +29,14 @@
         context = new AudioContext()
 
         return true
+    }
+
+    function close() {
+        let tracks = stream.getTracks()
+
+        for (let track of tracks) {
+            track.stop()
+        }
     }
 
     async function record() {
@@ -49,7 +58,7 @@
             context.decodeAudioData(arrayBuffer, buffer => {
                 audioBuffer = buffer
                 audioBuffer.getChannelData(0).reverse()
-                
+
                 if (audioBuffer.numberOfChannels === 2) {
                     audioBuffer.getChannelData(1).reverse()
                 }
@@ -92,7 +101,7 @@
             view.setUint16(position, data, true)
             position += 2
         }
-    
+
         function setUint32(data) {
             view.setUint32(position, data, true)
             position += 4
@@ -106,7 +115,7 @@
 
         // "WAVE"
         setUint32(0x45564157)
-        
+
         // "fmt" chunk
         setUint32(0x20746d66)
 
@@ -126,18 +135,18 @@
 
         // 16-bit
         setUint16(16)
-        
+
         // "data" chunk
         setUint32(0x61746164)
 
         // Chunk length
         setUint32(length - position - 4)
-    
+
         // Write interleaved data
         for (let i = 0; i < audioBuffer.numberOfChannels; i++) {
             channels.push(audioBuffer.getChannelData(i))
         }
-        
+
         let offset = 0
 
         while (position < length) {
@@ -145,9 +154,9 @@
             for (let i = 0; i < audioBuffer.numberOfChannels; i++) {
                 // Clamp
                 let sample = Math.max(-1, Math.min(1, channels[i][offset]))
-                
+
                 // Scale to 16-bit signed int
-                sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767)|0
+                sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0
 
                 // Write 16-bit sample
                 view.setInt16(position, sample, true)
@@ -157,7 +166,7 @@
             // Next source sample
             offset++
         }
-        
+
         let blob = new Blob([buffer], { type: 'audio/wav' })
         return URL.createObjectURL(blob)
     }

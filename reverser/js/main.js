@@ -2,13 +2,6 @@ onload = async () => {
     // Just a neat alias
     let $ = document.querySelector.bind(document)
 
-    let canRecord = await modules.record.init()
-
-    if (!canRecord) {
-        $('#record-init-error').style.display = 'block'
-        $('#record').disabled = true
-    }
-
     $('#reverse').onclick = () => {
         $('#output').textContent = modules.reverse.reversePhonetically($('#input').value)
     }
@@ -22,7 +15,15 @@ onload = async () => {
         link.click()
     }
 
-    function onRecordClick() {
+    async function onRecordClick() {
+        let canRecord = await modules.record.open()
+
+        if (!canRecord) {
+            $('#record-init-error').style.display = 'block'
+            $('#record').disabled = true
+            return
+        }
+
         modules.record.record()
         $('#play').disabled = true
         $('#download').disabled = true
