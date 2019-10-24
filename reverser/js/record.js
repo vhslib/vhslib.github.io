@@ -37,6 +37,10 @@
         for (let track of tracks) {
             track.stop()
         }
+
+        stream = null
+        mediaRecorder = null
+        context = null
     }
 
     async function record() {
