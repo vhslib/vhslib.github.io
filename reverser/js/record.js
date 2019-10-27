@@ -13,7 +13,7 @@
 
     let stream = null
     let mediaRecorder = null
-    let context = null
+    let context = new AudioContext()
     let audioBuffer = null
     let source = null
 
@@ -26,7 +26,6 @@
         }
 
         mediaRecorder = new MediaRecorder(stream)
-        context = new AudioContext()
 
         return true
     }
@@ -36,7 +35,6 @@
 
         stream = null
         mediaRecorder = null
-        context = null
     }
 
     async function record() {
