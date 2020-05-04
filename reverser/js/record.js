@@ -13,19 +13,20 @@
 
     let stream = null
     let mediaRecorder = null
-    let context = new AudioContext()
+    let context = null
     let audioBuffer = null
     let source = null
 
     async function open() {
         try {
+            context = new AudioContext()
             stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+            mediaRecorder = new MediaRecorder(stream)
+
         }
         catch {
             return false
         }
-
-        mediaRecorder = new MediaRecorder(stream)
 
         return true
     }

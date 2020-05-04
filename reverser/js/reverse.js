@@ -6,7 +6,19 @@
     }
 
     function reversePhonetically(input) {
-        return stringify(reverse(parse(input.toLowerCase())))
+        input = input.toLowerCase()
+
+        // Check for foreign letters and return error message
+
+        let acceptedChars = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя.,?!\'" ()[]{}:;*-«»'.split('')
+
+        for (let i = 0; i < input.length; i++) {
+            if (!acceptedChars.includes(input[i])) {
+                return 'ERROR: the following character is not supported: ' + input[i]
+            }
+        }
+
+        return stringify(reverse(parse(input)))
     }
 
     /* Helper functions */
@@ -23,14 +35,19 @@
     }
 
     function isVowel(letter) {
-        return isSimpleVowel(letter) || isSofteningVowel(letter)
+        return 'еёюяиэоуаы'.split('').includes(letter)
+    }
+
+    function isConsonant(letter) {
+        return 'бвгджзклмнпрстфхцчшщ'.split('').includes(letter)
     }
 
     function isEmpty(string) {
-        return !string || string === ' ' || string === '\n'
+        return !string || string === ' ' || string === '\n' || string === '\r'
     }
 
-    let diphtongToSimple = {
+    /* Mappings */
+    let softeningToSimple = {
         'е': 'э',
         'ё': 'о',
         'ю': 'у',
@@ -38,7 +55,7 @@
         'и': 'ы'
     }
 
-    let simpleToDiphtong = {
+    let simpleToSoftening = {
         'э': 'е',
         'о': 'ё',
         'у': 'ю',
@@ -46,51 +63,104 @@
         'ы': 'и'
     }
 
+    /* Turn a string into an array of Letters: */
     /* Letter { value: string, soft: boolean, stressed: boolean } */
-
     function parse(string) {
         let array = []
+
+        // Temporary stress flag, see below
         let stressed = false
 
         for (let i = 0; i < string.length; i++) {
+            // Check for ' sign which indicates that the next vowel is stressed
             if (string[i] === '\'') {
                 stressed = true
                 continue
             }
 
             if (isSofteningVowel(string[i])) {
+                // Get the letter before the current letter
+                // It normally has index i - 1
+                // But if we have a stressed vowel, note that index i - 1 is
+                // actually an apostrophe, so get the letter before it
                 let previousLetter = stressed ? string[i - 2] : string[i - 1]
 
                 if (canBeSoftened(previousLetter)) {
+                    // Soften the previous letter
                     array[array.length - 1].soft = true
-                    array.push({ value: diphtongToSimple[string[i]], stressed })
+
+                    // Add the corresponding simple letter
+                    array.push({ value: softeningToSimple[string[i]], stressed })
                 }
-                else {
-                    if (string[i] === 'и') {
-                        if (isEmpty(previousLetter)) {
-                            array.push({ value: 'и', stressed })
-                        }
-                        else {
-                            array.push({ value: diphtongToSimple[string[i]], stressed })
-                        }
+                else if (string[i] === 'и') {
+                    // Quite a complex case
+                    // 1. If the previous letter is a consonant (ANY),
+                    // replace и with ы
+                    // 2. If the next letter is a consonant (ANY),
+                    // preserve и and insert separating ъ
+                    // 3. Otherwise, just preserve
+
+                    if (isConsonant(previousLetter)) {
+                        array.push({ value: 'ы', stressed })
                     }
-                    else if (isEmpty(previousLetter) || isVowel(previousLetter) || previousLetter === 'ъ') {
-                        array.push({ value: 'й' })
-                        array.push({ value: diphtongToSimple[string[i]], stressed })
+                    else if (isConsonant(string[i + 1])) {
+                        array.push({ value: 'и', stressed })
+                        array.push({ value: 'ъ' })
                     }
                     else {
-                        array.push({ value: diphtongToSimple[string[i]], stressed })
+                        array.push({ value: 'и', stressed })
                     }
                 }
+                // Softening and not и => it's iotated vowel
+                else if (isEmpty(previousLetter) || isVowel(previousLetter) || previousLetter === 'ъ') {
+                    // In the beginning of the word,
+                    // after a vowel or after ъ
+                    // it is iotated
+                    array.push({ value: 'й' })
+                    array.push({ value: softeningToSimple[string[i]], stressed })
+                }
+                else {
+                    // In other positions it is not iotated
+                    array.push({ value: softeningToSimple[string[i]], stressed })
+                }
             }
-            else if (string[i] === 'ь' && canBeSoftened(string[i - 1])) {
-                array[array.length - 1].soft = true
+            else if (string[i] === 'ь') {
+                if (canBeSoftened(string[i - 1])) {
+                    // Complex case
+                    // 1. If ь is between a consonant and a softening vowel,
+                    // the consonant is softened and the vowel is iotated
+                    // 2. Otherwise, the consonant is just softened
+
+                    let nextLetter
+
+                    if (string[i + 1] === '\'') nextLetter = string[i + 2]
+                    else nextLetter = string[i + 1]
+
+                    if (isSofteningVowel(nextLetter)) {
+                        if (string[i + 1] === '\'') {
+                            stressed = true
+                        }
+
+                        array[array.length - 1].soft = true
+                        array.push({ value: 'й' })
+                        array.push({ value: softeningToSimple[nextLetter], stressed })
+
+                        // Next letter already handled
+                        i++
+                    }
+                    else {
+                        array[array.length - 1].soft = true
+                    }
+                }
+
             }
             else if (string[i] === 'ц') {
+                // Ц actually sounds quite like тс
                 array.push({ value: 'т' })
                 array.push({ value: 'с' })
             }
             else if (string[i] !== 'ъ') {
+                // Push every other letter except ъ
                 array.push({ value: string[i], stressed })
             }
 
@@ -101,62 +171,110 @@
     }
 
     function reverse(array) {
-        return array.slice().reverse()
+        let reversed = array.slice().reverse()
+
+        // Normalize a bit (convert тс to ц)
+
+        let normalized = []
+
+        for (let i = 0; i < reversed.length; i++) {
+            if (
+                reversed[i].value === 'т'
+                && reversed[i].soft !== true
+                && reversed[i + 1]
+                && reversed[i + 1].value === 'с'
+            ) {
+                normalized.push({ value: 'ц' })
+                i++
+            }
+            else {
+                normalized.push(reversed[i])
+            }
+        }
+
+        return normalized
     }
 
+    /* Turn an array of Letters back into a string */
     function stringify(array) {
         let string = ''
+        let STRESS_SIGN = String.fromCharCode(769)
 
         for (let i = 0; i < array.length; i++) {
-            if (array[i].soft) {
-                if (array[i + 1] && isSimpleVowel(array[i + 1].value)) {
-                    string += array[i].value
-                    string += simpleToDiphtong[array[i + 1].value]
+            if (array[i].value === 'й') {
+                if (array[i + 1] && array[i + 1].value === 'ы') {
+                    string += 'йы'
 
                     if (array[i + 1].stressed) {
-                        string += String.fromCharCode(769)
+                        string += STRESS_SIGN
                     }
 
+                    // Next letter already handled
+                    i++
+                }
+                else if (array[i + 1] && isSimpleVowel(array[i + 1].value)) {
+                    // Add separating ъ if the previous letter can be softened
+                    // to prevent it from being softened
+                    if (string[string.length - 1] !== 'ь' && array[i - 1] && canBeSoftened(array[i - 1].value)) {
+                        string += 'ъ'
+                    }
+                    
+                    string += simpleToSoftening[array[i + 1].value]
+
+                    if (array[i + 1].stressed) {
+                        string += STRESS_SIGN
+                    }
+                    
+                    // Next letter already handled
                     i++
                 }
                 else {
+                    string += 'й'
+                }
+            }
+            else if (array[i].soft) {
+                // The letter is soft
+                if (array[i + 1] && isSimpleVowel(array[i + 1].value)) {
+                    // The next letter is a simple vowel, replace with the softening one
+                    // Like "д'элать" -> "делать"
+
+                    string += array[i].value
+                    string += simpleToSoftening[array[i + 1].value]
+
+                    if (array[i + 1].stressed) {
+                        string += STRESS_SIGN
+                    }
+
+                    // Skip the next letter as it has been handled
+                    i++
+                }
+                else {
+                    // No vowel next, insert the letter and ь
                     string += array[i].value
                     string += 'ь'
                 }
             }
-            else if (array[i].value === 'й') {
-                if (array[i + 1] && array[i + 1].value === 'ы') {
-                    string += 'й'
-                    string += 'ы'
+            else if (
+                    isConsonant(array[i].value)
+                    && !canBeSoftened(array[i].value)
+                    && array[i + 1]
+                    && (array[i + 1].value === 'э' || array[i + 1].value === 'ы')
+                ) {
+                    string += array[i].value
+                    string += simpleToSoftening[array[i + 1].value]
 
                     if (array[i + 1].stressed) {
-                        string += String.fromCharCode(769)
+                        string += STRESS_SIGN
                     }
 
+                    // Skip the next letter as it has been handled
                     i++
-                }
-                else if (array[i + 1] && isSimpleVowel(array[i + 1].value)) {
-                    string += simpleToDiphtong[array[i + 1].value]
-
-                    if (array[i + 1].stressed) {
-                        string += String.fromCharCode(769)
-                    }
-
-                    i++
-                }
-                else {
-                    string += 'й'
-                }
-            }
-            else if (array[i].value === 'т' && array[i + 1] && array[i + 1].value === 'с') {
-                string += 'ц'
-                i++
             }
             else {
                 string += array[i].value
 
                 if (array[i].stressed) {
-                    string += String.fromCharCode(769)
+                    string += STRESS_SIGN
                 }
             }
         }
