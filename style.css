@@ -12,6 +12,7 @@ body {
     font-family: 'Arial';
     background: url(images/vhs.gif);
     background-size: contain;
+    font-size: 14px;
 }
 
 .header {
@@ -117,4 +118,56 @@ body {
     color: #D1182D;
     text-decoration: none;
     border-bottom: 1px solid;
+}
+
+@media screen and (max-width: 940px) {
+    .header {
+        font-size: 3em;
+    }
+
+    .social-entry__image {
+        width: 40px;
+        margin-bottom: 5px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    body {
+        font-size: 11px;
+    }
+
+    .header {
+        margin-bottom: 20px;
+        font-size: 2.4em;
+    }
+
+    .header__emphasis {
+        text-shadow: 2px 1px 0px #000000;
+    }
+
+    .social {
+        margin-bottom: 10px;
+    }
+
+    .social-entry__image {
+        width: 30px;
+    }
+
+    .gallery-section h2 {
+        font-size: 1.8em;
+    }
+
+    .gallery-section h3 {
+        font-size: 1.6em;
+    }
+
+    .services p span {
+        font-size: 1.5em;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .header {
+        font-size: 1.8em;
+    }
 }
