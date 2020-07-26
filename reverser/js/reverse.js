@@ -6,19 +6,7 @@
     }
 
     function reversePhonetically(input) {
-        input = input.toLowerCase()
-
-        // Check for foreign letters and return error message
-
-        let acceptedChars = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя.,?!\'" ()[]{}:;*-«»'.split('')
-
-        for (let i = 0; i < input.length; i++) {
-            if (!acceptedChars.includes(input[i])) {
-                return 'ERROR: the following character is not supported: ' + input[i]
-            }
-        }
-
-        return stringify(reverse(parse(input)))
+        return stringify(reverse(parse(input.toLowerCase())))
     }
 
     /* Helper functions */
@@ -218,13 +206,13 @@
                     if (string[string.length - 1] !== 'ь' && array[i - 1] && canBeSoftened(array[i - 1].value)) {
                         string += 'ъ'
                     }
-                    
+
                     string += simpleToSoftening[array[i + 1].value]
 
                     if (array[i + 1].stressed) {
                         string += STRESS_SIGN
                     }
-                    
+
                     // Next letter already handled
                     i++
                 }
