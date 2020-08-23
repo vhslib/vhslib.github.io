@@ -3,7 +3,9 @@ onload = async () => {
     let $ = document.querySelector.bind(document)
 
     $('#reverse').onclick = () => {
-        $('#output').textContent = modules.reverse.reversePhonetically($('#input').value)
+        let input = $('#input').value
+        let convertCh = $('#convert-ch').checked
+        $('#output').textContent = modules.reverse.reversePhonetically(input, convertCh)
     }
 
     $('#record').onclick = onRecordClick

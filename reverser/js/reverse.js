@@ -5,7 +5,11 @@
         reversePhonetically
     }
 
-    function reversePhonetically(input) {
+    // Option whether to convert ч to тщ and vice versa
+    let convertCh
+
+    function reversePhonetically(input, _convertCh) {
+        convertCh = _convertCh
         return stringify(reverse(parse(input.toLowerCase())))
     }
 
@@ -147,6 +151,11 @@
                 array.push({ value: 'т' })
                 array.push({ value: 'с' })
             }
+            else if (string[i] === 'ч' && convertCh) {
+                // Ч actually sounds quite like тщ
+                array.push({ value: 'т' })
+                array.push({ value: 'щ' })
+            }
             else if (string[i] !== 'ъ') {
                 // Push every other letter except ъ
                 array.push({ value: string[i], stressed })
@@ -161,18 +170,30 @@
     function reverse(array) {
         let reversed = array.slice().reverse()
 
-        // Normalize a bit (convert тс to ц)
+        // Normalize a bit (convert тс to ц, тщ to ч)
 
         let normalized = []
 
         for (let i = 0; i < reversed.length; i++) {
             if (
+                // тс
                 reversed[i].value === 'т'
                 && reversed[i].soft !== true
                 && reversed[i + 1]
                 && reversed[i + 1].value === 'с'
             ) {
                 normalized.push({ value: 'ц' })
+                i++
+            }
+            else if (
+                // тщ
+                reversed[i].value === 'т'
+                && reversed[i].soft !== true
+                && reversed[i + 1]
+                && reversed[i + 1].value === 'щ'
+                && convertCh
+            ) {
+                normalized.push({ value: 'ч' })
                 i++
             }
             else {

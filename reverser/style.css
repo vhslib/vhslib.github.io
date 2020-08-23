@@ -48,6 +48,16 @@ body {
     font-size: 1em;
 }
 
+label {
+    display: block;
+    margin-bottom: 35px;
+    font-size: 0.95em;
+}
+
+input[type="checkbox"] {
+    margin-left: 0;
+}
+
 button {
     font-size: 0.9em;
     outline: 1px solid #000000;
@@ -70,11 +80,11 @@ button[disabled] {
         width: calc(100% - 20px);
         margin: 20px 10px;
     }
-    
+
     button {
         font-size: 0.8em;
     }
-    
+
     #reverse, #record, #play {
         margin-right: 5px;
     }
