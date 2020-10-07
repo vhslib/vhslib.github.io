@@ -1,0 +1,173 @@
+* {
+    margin: 0;
+    font-size: inherit;
+}
+
+::selection {
+    color: black;
+    background: red;
+}
+
+body {
+    font-family: 'Arial';
+    background: url(images/vhs.gif);
+    background-size: contain;
+    font-size: 14px;
+}
+
+.header {
+    margin-top: 20px;
+    margin-bottom: 40px;
+    text-align: center;
+    font-size: 4em;
+}
+
+.header__emphasis {
+    background: #D1182D;
+    text-shadow: 5px 3px 0px #000000;
+}
+
+.social {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.social-entry {
+    display: inline-block;
+    margin-right: 35px;
+}
+
+.social-entry__image {
+    display: block;
+    width: 50px;
+    margin-bottom: 10px;
+}
+
+.gallery {
+    border-top: 2px solid black;
+    padding-top: 30px;
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-bottom: 30px;
+}
+
+.gallery-section {
+    margin-bottom: 20px;
+    font-family: monospace;
+}
+
+.gallery-section h2 {
+    font-size: 2.6em;
+    font-weight: normal;
+    margin-bottom: 10px;
+}
+
+.gallery-section h2 a {
+    background: #D1182D;
+    color: black;
+    text-decoration: none;
+    border-bottom: 3px solid;
+}
+
+.gallery-section h3 {
+    font-size: 2em;
+    font-weight: normal;
+    margin-bottom: 20px;
+}
+
+.gallery-section h3 span {
+    background: black;
+    color: #D1182D;
+}
+
+.gallery-section p {
+    font-size: 1.5em;
+    line-height: 1.5;
+}
+
+.gallery-section p span {
+    background: black;
+    color: white;
+}
+
+.services {
+    margin-left: 10%;
+    margin-right: 10%;
+    border-top: 2px solid black;
+    padding-top: 20px;
+    font-family: monospace;
+    margin-bottom: 15px;
+}
+
+.services h2 {
+    margin-bottom: 15px;
+    font-size: 2.2em;
+}
+
+.services h2 span {
+    background-color: #FE0308;
+}
+
+.services p span {
+    font-size: 1.8em;
+    line-height: 1.5;
+    background-color: white;
+}
+
+.services a {
+    color: #D1182D;
+    text-decoration: none;
+    border-bottom: 1px solid;
+}
+
+@media screen and (max-width: 940px) {
+    .header {
+        font-size: 3em;
+    }
+
+    .social-entry__image {
+        width: 40px;
+        margin-bottom: 5px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    body {
+        font-size: 11px;
+    }
+
+    .header {
+        margin-bottom: 20px;
+        font-size: 2.4em;
+    }
+
+    .header__emphasis {
+        text-shadow: 2px 1px 0px #000000;
+    }
+
+    .social {
+        margin-bottom: 10px;
+    }
+
+    .social-entry__image {
+        width: 30px;
+    }
+
+    .gallery-section h2 {
+        font-size: 1.8em;
+    }
+
+    .gallery-section h3 {
+        font-size: 1.6em;
+    }
+
+    .services p span {
+        font-size: 1.5em;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .header {
+        font-size: 1.8em;
+    }
+}
