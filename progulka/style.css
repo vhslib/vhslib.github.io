@@ -10,6 +10,10 @@ body {
 }
 
 @media (max-width: 1000px) {
+    body {
+        font-size: 15px;
+    }
+
     #wrapper {
         margin-left: 10px;
         margin-right: 10px;
