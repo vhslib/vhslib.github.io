@@ -1,0 +1,54 @@
+body {
+    margin: 0;
+    font-size: 19px;
+    font-family: 'Times New Roman', sans-serif;
+}
+
+#wrapper {
+    margin-left: 15%;
+    margin-right: 15%;
+}
+
+@media (max-width: 1000px) {
+    #wrapper {
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+}
+
+h1, h2, h3 {
+    text-align: center;
+}
+
+p {
+    line-height: 1.3;
+}
+
+.epigraph {
+    text-align: right;
+    font-size: 0.9em;
+}
+
+.poem {
+    text-align: center;
+    font-style: italic;
+}
+
+.center {
+    text-align: center;
+}
+
+.anchor {
+    vertical-align: super;
+    font-size: 0.7em;
+    text-decoration: none;
+}
+
+#notes {
+    font-size: 0.8em;
+}
+
+#notes a {
+    text-decoration: none;
+    padding-right: 10px;
+}

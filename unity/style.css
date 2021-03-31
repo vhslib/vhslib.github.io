@@ -1,0 +1,16 @@
+body {
+    margin: 0;
+    font-size: 18px;
+}
+
+#wrapper {
+    margin-left: 15%;
+    margin-right: 15%;
+}
+
+@media (max-width: 1000px) {
+    #wrapper {
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+}
